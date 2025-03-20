@@ -26,7 +26,7 @@ public class encryptionASE {
         this.IV = cipher.getIV();
     }
 
-    public void initFromStrings(String secretKey, String IV){
+    public void initFromStrings(byte[] secretKey, byte[] IV){
         this.key = new SecretKeySpec(decode(secretKey), "AES");
         this.IV = decode(IV);
     }
@@ -37,31 +37,29 @@ public class encryptionASE {
     }
 
     //encrypt method with string of message
-    public String encrypt(String message, int KEY_SIZE) throws Exception{
-        byte[] messageInByte = message.getBytes();
+    public byte[] encrypt(byte[] message, int KEY_SIZE) throws Exception{
         Cipher encryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
         GCMParameterSpec spec = new GCMParameterSpec(T_LEN, IV);
         encryptionCipher.init(Cipher.ENCRYPT_MODE, key, spec);
-        byte[] encryptedBytes = encryptionCipher.doFinal(messageInByte);
+        byte[] encryptedBytes = encryptionCipher.doFinal(message);
         return encode(encryptedBytes);
     }
 
     //decrypt method with string of message
-    public String decrypt(String encryptedMessage, int KEY_SIZE) throws Exception{
+    public byte[] decrypt(byte[] encryptedMessage, int KEY_SIZE) throws Exception{
         byte[] messageInByte = decode(encryptedMessage);
         Cipher decryptionCipher = Cipher.getInstance("AES/GCM/NoPadding");
         GCMParameterSpec spec = new GCMParameterSpec(T_LEN, IV);
         decryptionCipher.init(Cipher.DECRYPT_MODE, key, spec);
-        byte[] decryptedBytes = decryptionCipher.doFinal(messageInByte);
-        return new String(decryptedBytes);
+        return decryptionCipher.doFinal(messageInByte);
     }
 
-    private String encode(byte[] data){
-        return Base64.getEncoder().encodeToString(data);
+    private byte[] encode(byte[] data){
+        return Base64.getEncoder().encode(data);
     }
 
-    private byte[] decode(String data) {
-        return Base64.getDecoder().decode(data.getBytes());
+    private byte[] decode(byte[] data) {
+        return Base64.getDecoder().decode(data);
     }
 
     public void exportKeys() throws IOException{

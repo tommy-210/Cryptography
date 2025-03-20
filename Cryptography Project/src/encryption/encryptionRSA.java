@@ -23,8 +23,8 @@ public class encryptionRSA {
     }
 
     //endode
-    private static String encode(byte[] data) {
-        return Base64.getEncoder().encodeToString(data);
+    private static byte[] encode(byte[] data) {
+        return Base64.getEncoder().encode(data);
     }
     //decode
     private static byte[] decode(String data) {
@@ -65,21 +65,18 @@ public class encryptionRSA {
     }
 
     //encryption method with string
-    public String encryption(String message) throws Exception {
-        byte[] messageToBytes = message.getBytes();
+    public byte[] encryption(byte[] message) throws Exception {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.ENCRYPT_MODE, PublicKey);
-        byte[] encryptedBytes = cipher.doFinal(messageToBytes);
+        byte[] encryptedBytes = cipher.doFinal(message);
         return encode(encryptedBytes);
     }
 
     //decryption method with string
-    public String decryption(String encryptedMessage) throws Exception {
-        byte[] encryptedBytes = decode(encryptedMessage);
+    public byte[] decryption(byte[] encryptedMessage) throws Exception {
         Cipher cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
         cipher.init(Cipher.DECRYPT_MODE, PrivateKey);
-        byte[] decryptedMessage = cipher.doFinal(encryptedBytes);
-        return new String(decryptedMessage);
+        return cipher.doFinal(encryptedMessage);
     }
 
     public void exportKey() throws IOException{

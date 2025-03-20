@@ -10,17 +10,21 @@ public class encryptManager {
     encryptionASE encryptionASE = new encryptionASE();
     encryptionRSA encryptionRSA = new encryptionRSA();
 
-    private String messageInString;
+    private byte[] messageInByte;
     private int RSA_KEY_SIZE = 1024;
     private int AES_KEY_SIZE = 128;
-    String[] key;
     File fileToFileMethod;
+    String[] key;
 
     encryptManager() {
 
     }
 
-    public void cryptography(boolean isEncryptio, boolean isRSAMethod, int indexMethod, String secretKey, String IV, String message, boolean printKeys) throws Exception {
+    public void setFileToFileMethod(String filePath) {
+        fileToFileMethod = new File(filePath);
+    }
+
+    public void cryptography(boolean isEncryptio, boolean isRSAMethod, int indexMethod, String secretKey, String IV, byte[] message, boolean printKeys) throws Exception {
         if(isEncryptio) {
             //encryption
             encryption(isRSAMethod, indexMethod, secretKey, IV, message, printKeys);
@@ -28,11 +32,11 @@ public class encryptManager {
             //decryption
             decryption(isRSAMethod, indexMethod, secretKey, IV, message, printKeys);
         }
-        this.messageInString = null;
+        this.messageInByte = null;
     }
 
     //encryption method
-    public void encryption(boolean isRSAMethod, int indexMethod, String secretKey, String IV, String message, boolean printKeys) throws Exception {
+    public void encryption(boolean isRSAMethod, int indexMethod, String secretKey, String IV, byte[] message, boolean printKeys) throws Exception {
         //which methods use
         if(isRSAMethod) {
             //check if key is just genereted
@@ -43,7 +47,7 @@ public class encryptManager {
             if(printKeys) encryptionRSA.exportKey();
         }else {
             if(!secretKey.equals("Ciao") && !IV.equals("Ciao")) {
-                encryptionASE.initFromStrings(secretKey, IV);
+                encryptionASE.initFromStrings(secretKey.getBytes(), IV.getBytes());
             }
             checkMethodsAES(true, indexMethod, message);
             if(printKeys) encryptionASE.exportKeys();
@@ -52,7 +56,7 @@ public class encryptManager {
     }
 
     //decryption method
-    public void decryption(boolean isRSAMethod, int indexMethod, String secretKey, String IV, String message, boolean printKeys) throws Exception{
+    public void decryption(boolean isRSAMethod, int indexMethod, String secretKey, String IV, byte[] message, boolean printKeys) throws Exception{
         if(isRSAMethod) {
             if(!secretKey.equals("Ciao")) {
                 encryptionRSA.initPrivateFromStrings(secretKey);
@@ -61,7 +65,7 @@ public class encryptManager {
             if(printKeys) encryptionRSA.exportKey();
         }else {
             if(!secretKey.equals("Ciao") && !IV.equals("Ciao")) {
-                encryptionASE.initFromStrings(secretKey, IV);
+                encryptionASE.initFromStrings(secretKey.getBytes(), IV.getBytes());
             }
             checkMethodsAES(false, indexMethod, message);
             if(printKeys) encryptionASE.exportKeys();
@@ -70,50 +74,50 @@ public class encryptManager {
     }
     
     //check methods for RSA cryptography
-    public void checkMethodsRSA(boolean isEncryption, int indexMethod, String message) throws Exception {
-        String messageFile;
+    public void checkMethodsRSA(boolean isEncryption, int indexMethod, byte[] message) throws Exception {
+        byte[] messageFile;
         switch (indexMethod) {
             case 0:
                 // message to message
-                if(isEncryption) this.messageInString = encryptionRSA.encryption(message);
-                else this.messageInString = encryptionRSA.decryption(message);
+                if(isEncryption) this.messageInByte = encryptionRSA.encryption(message);
+                else this.messageInByte = encryptionRSA.decryption(message);
                 break;
             case 1:
                 // message to file
-                if(isEncryption) this.messageInString = encryptionRSA.encryption(message);
-                else this.messageInString = encryptionRSA.decryption(message);
+                if(isEncryption) this.messageInByte = encryptionRSA.encryption(message);
+                else this.messageInByte = encryptionRSA.decryption(message);
                 createCryptographyFile(isEncryption, true);
                 break;
             case 2:
                 // file to file
-                messageFile = convertFileToString(message);
-                if(isEncryption) this.messageInString = encryptionRSA.encryption(messageFile);
-                else this.messageInString = encryptionRSA.decryption(messageFile);
+                messageFile = convertFileToString(new String(message));
+                if(isEncryption) this.messageInByte = encryptionRSA.encryption(messageFile);
+                else this.messageInByte = encryptionRSA.decryption(messageFile);
                 createCryptographyFile(isEncryption, true);
                 break;
             }
     }
 
     //check methods for AES cryptography
-    public void checkMethodsAES(boolean isEncryption, int indexMethod, String message) throws Exception {
-        String messageFile;
+    public void checkMethodsAES(boolean isEncryption, int indexMethod, byte[] message) throws Exception {
+        byte[] messageFile;
         switch (indexMethod) {
             case 0:
                 // message to message
-                if(isEncryption) this.messageInString = encryptionASE.encrypt(message, AES_KEY_SIZE);
-                else this.messageInString = encryptionASE.decrypt(message, AES_KEY_SIZE);
+                if(isEncryption) this.messageInByte = encryptionASE.encrypt(message, AES_KEY_SIZE);
+                else this.messageInByte = encryptionASE.decrypt(message, AES_KEY_SIZE);
                 break;
             case 1:
                 // message to file
-                if(isEncryption) this.messageInString = encryptionASE.encrypt(message, AES_KEY_SIZE);
-                else this.messageInString = encryptionASE.decrypt(message, AES_KEY_SIZE);
+                if(isEncryption) this.messageInByte = encryptionASE.encrypt(message, AES_KEY_SIZE);
+                else this.messageInByte = encryptionASE.decrypt(message, AES_KEY_SIZE);
                 createCryptographyFile(isEncryption, false);
                 break;
             case 2:
                 // file to file
-                messageFile = convertFileToString(message);
-                if(isEncryption) this.messageInString = encryptionASE.encrypt(messageFile, AES_KEY_SIZE);
-                else this.messageInString = encryptionASE.decrypt(messageFile, AES_KEY_SIZE);
+                messageFile = convertFileToString(new String(message));
+                if(isEncryption) this.messageInByte = encryptionASE.encrypt(messageFile, AES_KEY_SIZE);
+                else this.messageInByte = encryptionASE.decrypt(messageFile, AES_KEY_SIZE);
                 createCryptographyFile(isEncryption, false);
                 break;
             }
@@ -121,7 +125,7 @@ public class encryptManager {
     
     //update text area
     public void showMessageInDialog() {
-        String message = this.messageInString;
+        String message = new String(this.messageInByte);
         cryptographyDialog.updateTextArea(message);
     }
 
@@ -138,7 +142,7 @@ public class encryptManager {
         file.createNewFile();
         //write in file
         try(FileOutputStream fileOutputStream = new FileOutputStream(file)) {
-            fileOutputStream.write(messageInString.getBytes());
+            fileOutputStream.write(messageInByte);
             fileOutputStream.flush();
             fileOutputStream.close();
             file.setReadOnly();
@@ -146,12 +150,9 @@ public class encryptManager {
     }
 
     //convert file in array of byte
-    public String convertFileToString(String filePath) throws Exception{
-        fileToFileMethod = new File(filePath);
-        try(FileInputStream fileInputStream = new FileInputStream(fileToFileMethod)) {
-            byte[] message = new byte[(int) fileToFileMethod.length()];
-            fileInputStream.read(message);
-            return new String(message);
+    public byte[] convertFileToString(String filePath) throws Exception{
+        try(FileInputStream fileInputStream = new FileInputStream(filePath)) {
+            return new byte[fileInputStream.available()];
         }
     }
 

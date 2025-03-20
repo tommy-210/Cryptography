@@ -1,10 +1,12 @@
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import javax.swing.JRadioButton;
+import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextField;
 import javax.swing.filechooser.FileNameExtensionFilter;
@@ -31,7 +33,7 @@ public class cryptographyDialog extends JFrame implements ActionListener{
     Dimension APP_SIZE = new Dimension(600, 500);
     JRadioButton AESRadioBtn, RSARadioBtn;
     JTextField IVTextField, keyTextField;
-    static JTextArea messagTextArea;
+    JTextArea messagTextArea;
     JCheckBox printKeyCheckBox;
     @SuppressWarnings("rawtypes")
     JComboBox comboBox;
@@ -151,7 +153,7 @@ public class cryptographyDialog extends JFrame implements ActionListener{
         if(filePath != null) {
             try {
                 //convert file to string
-                String message = encryptManager.convertFileToString(filePath);
+                String message = new String(encryptManager.convertFileToString(filePath));
                 //update gui
                 updateTextArea(message);
             } catch (Exception e) {e.printStackTrace();}
@@ -178,6 +180,7 @@ public class cryptographyDialog extends JFrame implements ActionListener{
         if(absoluteFilePath != null) {
             //update with file path the text area
             updateTextArea(absoluteFilePath);
+            encryptManager.setFileToFileMethod(absoluteFilePath);
         }
     }
 
@@ -222,20 +225,22 @@ public class cryptographyDialog extends JFrame implements ActionListener{
                         //get methods
                         int method = comboBox.getSelectedIndex();
                         //check message
-                        String message = messagTextArea.getText();
+                        byte[] message = messagTextArea.getText().getBytes();
                         //check if print keys
                         boolean isPrintKeys = printKeyCheckBox.isSelected();
                         try {
-                            encryptManager.cryptography(IS_ENCRYPTION_DIALOG, isRSAMethod, method, key, IV, message, isPrintKeys);
+                            if( JOptionPane.OK_OPTION == 
+                                JOptionPane.showConfirmDialog(this, "Confirm to encryption", "Confirm", JOptionPane.OK_CANCEL_OPTION, JOptionPane.QUESTION_MESSAGE))
+                                encryptManager.cryptography(IS_ENCRYPTION_DIALOG, isRSAMethod, method, key, IV, message, isPrintKeys);
                         } catch (Exception e) {e.printStackTrace();}
-                    }else JOptionPane.showMessageDialog(cryptographyDialog.this, "You're not print a message", "ERROR!", JOptionPane.ERROR_MESSAGE);
-                }else JOptionPane.showMessageDialog(cryptographyDialog.this, "You're not print a IV", "ERRORE!", JOptionPane.ERROR_MESSAGE);
-            }else JOptionPane.showMessageDialog(cryptographyDialog.this, "You're not print a key", "ERROR!", JOptionPane.ERROR_MESSAGE);
-        }else JOptionPane.showMessageDialog(cryptographyDialog.this, "You're not select a method", "ERROR!", JOptionPane.ERROR_MESSAGE);
+                    }else JOptionPane.showMessageDialog(this, "You're not print a message", "ERROR!", JOptionPane.ERROR_MESSAGE);
+                }else JOptionPane.showMessageDialog(this, "You're not print a IV", "ERRORE!", JOptionPane.ERROR_MESSAGE);
+            }else JOptionPane.showMessageDialog(this, "You're not print a key", "ERROR!", JOptionPane.ERROR_MESSAGE);
+        }else JOptionPane.showMessageDialog(this, "You're not select a method", "ERROR!", JOptionPane.ERROR_MESSAGE);
     }
 
     //update text area
-    public static void updateTextArea(String message) {
+    public static  void updateTextArea(String message) {
         messagTextArea.setText(message);
         messagTextArea.updateUI();
     }
@@ -347,13 +352,14 @@ public class cryptographyDialog extends JFrame implements ActionListener{
         messagTextArea = new JTextArea("Type your message for " + (IS_ENCRYPTION_DIALOG ? "Encryption" : "Decryption"));
         messagTextArea.setBorder(BorderFactory.createLineBorder(BORDER_CL, 2));
         messagTextArea.setBounds(leftAlliniamet, 260, 400, 100);
-        messagTextArea.setAutoscrolls(true);
-        messagTextArea.setWrapStyleWord(false);
         messagTextArea.setBackground(BG_COLOR);
         messagTextArea.setForeground(LABEL_CL);
         messagTextArea.setLineWrap(true);
         messagTextArea.setFont(LABEL_FONT);
-        add(messagTextArea);
+        // add(messagTextArea);
+
+        static JScrollPane scroll = ;
+        add(scroll);
 
         //set btn for open message file
         textOpenFileBtn = new JButton("Open file");
