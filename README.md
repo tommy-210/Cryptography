@@ -30,6 +30,9 @@ It uses **two different methods** of encryptio / decryption witch are **RSA** an
 >- Wireless networks.
 >- Databases.
 
+## Docs
+To troubleshoot and better understand how this works go to the documentation [WIKI](WIKI.md)
+
 ## Installation
 There are several methods to install it.
 
@@ -74,6 +77,7 @@ You can also **Export Keys** on a file (.txt).
 * If you choose the **RSA** method you will only be able to encrypt **messages shorter** than **117 characters**.
 * For the **Image encryption** you will have to enter the **image path**.
 * For the **Image decryption** you will have to enter the **text that was encrypted** for you (that file .txt contains a lot of characters).
+* The **image extension** must be `.png`.
 
 ---
 
